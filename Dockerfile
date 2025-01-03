@@ -1,4 +1,4 @@
-# Base image avec PHP 8.4 et FPM
+# Base image avec PHP 8.2 et FPM
 FROM php:8.4-fpm
 
 # Installer les dépendances nécessaires
@@ -20,10 +20,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copier les fichiers de l'application dans le conteneur
-COPY . .
+COPY . ./
 
 # Copier le fichier .env.example vers .env avant l'installation de Composer
-# Ajouter une vérification pour forcer la copie si le fichier n'est pas présent
 RUN test -f .env || cp .env.example .env
 
 # Installer les dépendances PHP avec Composer
@@ -33,8 +32,8 @@ RUN composer install --ignore-platform-reqs --no-scripts --prefer-dist
 RUN php artisan key:generate
 
 # Assurer les bonnes permissions pour Laravel
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache vendor
+RUN chmod -R 775 storage bootstrap/cache vendor
 
 # Exposer le port 9000 et démarrer le serveur php-fpm
 EXPOSE 9000
